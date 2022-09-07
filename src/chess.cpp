@@ -60,6 +60,11 @@ class Piece {
 class Board {
     private:
         std::vector<int> square;
+        bool whiteToMove = false;
+        bool whiteCanCastleKing = true;
+        bool whiteCanCastleQueen = true;
+        bool blackCanCastleKing = true;
+        bool blackCanCastleQueen = true;
 
     public:
     Board(){
@@ -80,10 +85,6 @@ class Board {
         int rank = 7;
         char lastChar = 'z';
         Piece pieceValues;
-
-        bool whiteToMove = false;
-        bool whiteCanCastle = false;
-        bool blackCanCastle = false;
 
         int FENLength = FEN.length();
         std::cout << FENLength << std::endl;
@@ -113,7 +114,7 @@ class Board {
                 break;
 
             } else if(currentChar == 'b' && rank == 0 && file <= 0 && lastChar == ' '){
-                currentPositionInFEN = i;
+                currentPositionInFEN = i + 1;
                 whiteToMove = false;
                 break;
 
@@ -130,6 +131,27 @@ class Board {
                 file --;
             } 
         }
+
+        for(int i = currentPositionInFEN; i < FENLength; i++){
+            char currentChar = FEN[i];
+            
+            if(currentChar == ' '){
+                continue;
+            } else if(currentChar == 'K'){
+                whiteCanCastleKing = true;
+            } else if(currentChar == 'Q'){
+                whiteCanCastleQueen = true;
+            } else if(currentChar == 'k'){
+                blackCanCastleKing = true;
+            } else if(currentChar == 'q'){
+                blackCanCastleQueen = true;
+            } else {
+                currentPositionInFEN = i;
+                break;
+            }
+
+        }
+
     }
 
     void printBoard(){
