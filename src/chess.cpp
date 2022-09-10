@@ -203,7 +203,6 @@ class Board {
 
     void printBoard(){
         Piece pieceValues;
-        std::cout << showValue(57);
 
         for(int rank = 7; rank >= 0; rank--){
             if(rank != 7){std::cout << "|";}
