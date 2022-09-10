@@ -54,6 +54,51 @@ class Piece {
                 return 0;
             }
         }
+
+        char getPieceNotation(int pieceValue){
+            char pieceNotation = ' ';
+            bool isWhite = true;
+
+            if(pieceValue > black){
+                isWhite = false;
+                pieceValue -= black;
+
+            } else {pieceValue -= white;}
+
+            switch(pieceValue){
+                case king:
+                    pieceNotation = 'k';
+                    break;
+
+                case queen:
+                    pieceNotation = 'q';
+                    break;
+
+                case bishop:
+                    pieceNotation = 'b';
+                    break;
+
+                case knight:
+                    pieceNotation = 'n';
+                    break;
+
+                case rook:
+                    pieceNotation = 'r';
+                    break;
+
+                case pawn:
+                    pieceNotation = 'p';
+                    break;
+
+                default:
+                    pieceNotation = 'x';
+                    break;
+            }
+            if(isWhite){
+                return toupper(pieceNotation);
+
+            } else {return pieceNotation;}
+        }
 };
 
 
@@ -65,6 +110,7 @@ class Board {
         bool whiteCanCastleQueen = true;
         bool blackCanCastleKing = true;
         bool blackCanCastleQueen = true;
+
 
     public:
     Board(){
@@ -81,7 +127,7 @@ class Board {
 
     void loadPositionFromFEN(std::string FEN){
         // rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1
-        int file = 7;
+        int file = 0;
         int rank = 7;
         char lastChar = 'z';
         Piece pieceValues;
@@ -100,20 +146,20 @@ class Board {
                 currentPieceValue = 0;
 
             } else if(currentChar == '/'){
-                file = 7;
+                file = 0;
                 rank--;
             // elif above is a bit iffy, need to fix
 
             } else if(isdigit(currentChar)) {
-                int digitToMinus = currentChar - '0';
-                file -= digitToMinus;
+                int digitToAdd = currentChar - '0';
+                file += digitToAdd;
 
-            } else if(currentChar == 'w' && rank == 0 && file <= 0 && lastChar == ' '){
+            } else if(currentChar == 'w' && rank == 0 && lastChar == ' '){
                 currentPositionInFEN = i;
                 whiteToMove = true;
                 break;
 
-            } else if(currentChar == 'b' && rank == 0 && file <= 0 && lastChar == ' '){
+            } else if(currentChar == 'b' && rank == 0 && lastChar == ' '){
                 currentPositionInFEN = i + 1;
                 whiteToMove = false;
                 break;
@@ -128,7 +174,7 @@ class Board {
                 currentPieceValue += pieceValues.getPieceValue(char(tolower(currentChar)));
 
                 updateSquare(rank * 8 + file, currentPieceValue);
-                file --;
+                file ++;
             } 
         }
 
@@ -154,14 +200,29 @@ class Board {
 
     }
 
+
     void printBoard(){
-        std::cout << square[6] << std::endl;
-        for(int i = 63; i >= 0; i--){
-            if(i != 63 && (i +1) % 8 == 0){
-                std::cout << std::endl;
+        Piece pieceValues;
+        std::cout << showValue(57);
+
+        for(int rank = 7; rank >= 0; rank--){
+            if(rank != 7){std::cout << "|";}
+
+            std::cout << std::endl;
+            std::cout << "_________________________________" << std::endl;
+
+            for(int file = 0; file <= 7; file++){
+                int squareValue = showValue(rank * 8 + file);
+
+                if(squareValue == 0){
+                    std::cout << "|   ";
+
+                } else { std::cout << "| " << pieceValues.getPieceNotation(squareValue) << " ";}
             }
-            std::cout << "|" << showValue(i);
         }
+
+        std::cout << "|" << std::endl;
+        std::cout << "_________________________________" << std::endl;
     }
 
 };
@@ -169,7 +230,10 @@ class Board {
 
 int main(){
     Board board1;
-    board1.loadPositionFromFEN("rnbq1rk1/2p1bppp/p2p1n2/1p2p3/4P3/1BP2N1P/PP1P1PP1/RNBQR1K1 w - - 1 10");
+    std::string FEN;
+    std::cout << "Insert FEN: ";
+    std::cin >> FEN;
+    board1.loadPositionFromFEN(FEN);
     board1.printBoard();
     return 0;
 }
