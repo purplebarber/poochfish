@@ -102,6 +102,68 @@ class Piece {
 };
 
 
+class Moves{
+    private:
+    std::vector<int> edgesNorth = {56, 57, 58, 59, 60, 61, 62, 63};
+    std::vector<int> edgesEast = {7, 15, 23, 31, 39, 47, 55, 63};
+    std::vector<int> edgesSouth = {0, 1, 2, 3, 4, 5, 6, 7};
+    std::vector<int> edgesWest = {0, 8, 16, 24, 32, 40, 48, 56};
+
+    public:
+    std::vector<int> squaresToEdgeOfBoard(int pieceLocation){
+        int squaresToNorth = 0;
+        int squaresToEast = 0;
+        int squaresToSouth = 0;
+        int squaresToWest = 0;
+        int squaresNorthEast = 0;
+        int squaresSouthEast = 0;
+        int squaresSouthWest = 0;
+        int squaresNorthWest = 0;
+
+        int squareIterator = pieceLocation;
+
+        // North
+        while(!std::binary_search(edgesNorth.begin(), edgesNorth.end(), squareIterator)){
+            squareIterator += 8;
+            squaresToNorth ++;
+        } squareIterator = pieceLocation;
+
+        // South
+        while(!std::binary_search(edgesSouth.begin(), edgesSouth.end(), squareIterator)){
+            squareIterator -= 8;
+            squaresToSouth ++;
+        } squareIterator = pieceLocation;
+
+        // East
+        while(!(std::find(edgesEast.begin(), edgesEast.end(), squareIterator) != edgesEast.end())){
+            squareIterator ++;
+            squaresToEast ++;
+        } squareIterator = pieceLocation;
+
+        // West
+        while(!(std::find(edgesWest.begin(), edgesWest.end(), squareIterator) != edgesWest.end())){
+            squareIterator --;
+            squaresToWest ++;
+        } squareIterator = pieceLocation;
+
+        // Diagonals
+        squaresNorthEast = std::min(squaresToNorth, squaresToEast);
+        squaresSouthEast = std::min(squaresToSouth, squaresToEast);
+        squaresSouthWest = std::min(squaresToSouth, squaresToWest);
+        squaresNorthWest = std::min(squaresToNorth, squaresToWest);
+
+        std::vector<int> movesToEdgesAllDirections = {squaresToNorth, squaresToEast, squaresToSouth, squaresToWest,
+                                                    squaresNorthEast, squaresSouthEast, squaresSouthWest, squaresNorthWest};
+
+        return movesToEdgesAllDirections;
+    }
+
+
+    void getSlidingMoves(int pieceLocation){
+        // north = +8, south = -8, east = +1, west = -1, ne = +9, se = -7, sw = -9, nw = +7
+    }
+};
+
 class Board {
     private:
         std::vector<int> square;
@@ -110,11 +172,12 @@ class Board {
         bool whiteCanCastleQueen = true;
         bool blackCanCastleKing = true;
         bool blackCanCastleQueen = true;
+        Moves moves;
 
 
     public:
     Board(){
-        square.resize(64, 0); 
+        square.resize(64, 0);
     }
 
     int showValue(int squareID){
@@ -222,8 +285,8 @@ class Board {
         std::cout << "|" << std::endl;
         std::cout << "_________________________________" << std::endl;
     }
-
 };
+
 
 
 int main(){
@@ -233,5 +296,6 @@ int main(){
     std::cin >> FEN;
     board1.loadPositionFromFEN(FEN);
     board1.printBoard();
+    
     return 0;
 }
