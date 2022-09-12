@@ -148,7 +148,6 @@ class Board {
             } else if(currentChar == '/'){
                 file = 0;
                 rank--;
-            // elif above is a bit iffy, need to fix
 
             } else if(isdigit(currentChar)) {
                 int digitToAdd = currentChar - '0';
