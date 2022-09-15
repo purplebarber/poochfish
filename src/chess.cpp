@@ -245,11 +245,23 @@ class Moves{
         }
 
         if(pieceValue == Piece::pawn){
+            bool unMovedPawn = false;
+            if((pieceLocation >= 8 && pieceLocation <= 15) || (pieceLocation >= 48 && pieceLocation <=55)){
+                unMovedPawn = true;
+            }
             if(isWhite && squaresToEdge.at(0) > 0){
-                testingSquare = pieceLocation + north;
+                testingSquare = pieceLocation +  north;
                 testingSquareValue = boardVector.at(testingSquare);
                 if(testingSquareValue == 0){
                     possibleSquares.push_back(testingSquare);
+                }
+
+                if(unMovedPawn){
+                    testingSquare = pieceLocation + 2 * north;
+                    testingSquareValue = boardVector.at(testingSquare);
+                    if(testingSquareValue == 0){
+                        possibleSquares.push_back(testingSquare);
+                    }
                 }
 
                 for(int i = 4; i < 8; i+=3){
@@ -266,6 +278,14 @@ class Moves{
                 testingSquareValue = boardVector.at(testingSquare);
                 if(testingSquareValue == 0){
                     possibleSquares.push_back(testingSquare);
+                }
+
+                if(unMovedPawn){
+                    testingSquare = pieceLocation + 2 * south;
+                    testingSquareValue = boardVector.at(testingSquare);
+                    if(testingSquareValue == 0){
+                        possibleSquares.push_back(testingSquare);
+                    }
                 }
 
                 for(int i = 5; i < 7; i++){
