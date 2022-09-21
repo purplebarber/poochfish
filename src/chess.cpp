@@ -52,12 +52,13 @@ class Piece {
         }
 
         static char getPieceNotation(int pieceValue){
-            char pieceNotation = ' ';
+            char pieceNotation;
+            bool isPieceWhite = isWhite(pieceValue);
 
-            if(!isWhite(pieceValue)){
-                pieceValue -= black;
+            if(isPieceWhite){
+                pieceValue -= white;
 
-            } else {pieceValue -= white;}
+            } else {pieceValue -= black;}
 
             switch(pieceValue){
                 case king:
@@ -88,7 +89,7 @@ class Piece {
                     pieceNotation = 'x';
                     break;
             }
-            if(isWhite(pieceValue)){
+            if(isPieceWhite){
                 return toupper(pieceNotation);
             } else {return pieceNotation;}
         }
@@ -150,7 +151,7 @@ class Moves{
     }
 
     static bool isEnemyPiece(bool ourWeWhite, int enemyValue) {
-        if ((ourWeWhite && enemyValue < Piece::black) || (!ourWeWhite && enemyValue > Piece::black)) {
+        if ((ourWeWhite && enemyValue < Piece::black) || (!ourWeWhite && enemyValue > Piece::black) || enemyValue == 0) {
             return false;
         } else { return true; }
     }
@@ -306,13 +307,12 @@ class Moves{
 class Board {
     private:
         std::vector<int> square;
+        std::vector<int> enPassantAble = {};
         bool whiteToMove = false;
         bool whiteCanCastleKing = true;
         bool whiteCanCastleQueen = true;
         bool blackCanCastleKing = true;
         bool blackCanCastleQueen = true;
-        Moves moves;
-
 
     public:
     Board(){
@@ -445,6 +445,11 @@ class Board {
             std::vector<int> pseudoLegalMoves = {};
             std::cout << pieceLocation << " ---> " << squareToMoveTo << std::endl;
             pseudoLegalMoves = Moves::getPseudoPieceMoves(pieceLocation, square);
+
+            std::cout << "Legal moves: ";
+
+            for(int move : pseudoLegalMoves){std::cout << move << ", ";}
+            std::cout << std::endl;
 
             if (std::find(pseudoLegalMoves.begin(), pseudoLegalMoves.end(), squareToMoveTo) != pseudoLegalMoves.end()) {
                 updateSquare(squareToMoveTo, pieceToMove);
