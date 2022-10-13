@@ -156,7 +156,7 @@ class Moves{
         } else { return true; }
     }
 
-    static std::vector<int> getPseudoPieceMoves(int pieceLocation, std::vector<int> &boardVector){
+    static std::vector<int> getPseudoPieceMoves(int pieceLocation, std::vector<int> &boardVector, int enPassantSquare){
         // north = +8, south = -8, east = +1, west = -1, ne = +9, se = -7, sw = -9, nw = +7
         // sliding pieces: king, queen, bishop, rook
         int pieceValue = boardVector.at(pieceLocation);
@@ -250,6 +250,13 @@ class Moves{
             if((pieceLocation >= 8 && pieceLocation <= 15) || (pieceLocation >= 48 && pieceLocation <=55)){
                 unMovedPawn = true;
             }
+
+            if(enPassantSquare != -1 && ((enPassantSquare + east == pieceLocation) || (enPassantSquare + west == pieceLocation)) &&
+                    isEnemyPiece(isWhite, boardVector.at(enPassantSquare))){
+                if(isWhite){possibleSquares.push_back(enPassantSquare + north);}
+                else {possibleSquares.push_back(enPassantSquare + south);}
+            }
+
             if(isWhite && squaresToEdge.at(0) > 0){
                 testingSquare = pieceLocation +  north;
                 testingSquareValue = boardVector.at(testingSquare);
@@ -302,12 +309,23 @@ class Moves{
         }
         return possibleSquares;
     }
+
+    static bool wasThatADoublePawnMove(int pieceValue, int previousPawnSquare, int FuturePawnSquare){
+
+        if(Piece::isWhite(pieceValue)){pieceValue-=8;} else{pieceValue-=16;}
+
+        if(Piece::pawn != pieceValue){return false;}
+
+        if(previousPawnSquare + 2 * north == FuturePawnSquare || previousPawnSquare + 2 * south == FuturePawnSquare){
+            return true;
+        } else{return false;}
+    }
 };
 
 class Board {
     private:
         std::vector<int> square;
-        std::vector<int> enPassantAble = {};
+        int enPassantAble = -1;
         bool whiteToMove = false;
         bool whiteCanCastleKing = true;
         bool whiteCanCastleQueen = true;
@@ -444,7 +462,7 @@ class Board {
             std::cout << std::endl << "Gotten inputs: " << std::endl;
             std::vector<int> pseudoLegalMoves = {};
             std::cout << pieceLocation << " ---> " << squareToMoveTo << std::endl;
-            pseudoLegalMoves = Moves::getPseudoPieceMoves(pieceLocation, square);
+            pseudoLegalMoves = Moves::getPseudoPieceMoves(pieceLocation, square, enPassantAble);
 
             std::cout << "Legal moves: ";
 
@@ -452,9 +470,16 @@ class Board {
             std::cout << std::endl;
 
             if (std::find(pseudoLegalMoves.begin(), pseudoLegalMoves.end(), squareToMoveTo) != pseudoLegalMoves.end()) {
+
+                // pawn isnt captured when it's enpassanted
+                if(Moves::wasThatADoublePawnMove(pieceToMove, pieceLocation, squareToMoveTo)){
+                    enPassantAble = squareToMoveTo;
+                } else {enPassantAble = -1;}
+
                 updateSquare(squareToMoveTo, pieceToMove);
                 updateSquare(pieceLocation, 0);
                 std::cout << "Moved piece to square!" << std::endl;
+                std::cout << "EnPassantable = " << enPassantAble << std::endl;
 
             } else {
                 std::cout << "That piece cannot move there." << std::endl;
