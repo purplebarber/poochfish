@@ -397,23 +397,15 @@ class Board {
         for(int i = currentPositionInFEN; i < FENLength; i++){
             char currentChar = FEN[i];
 
-            if(currentChar == ' '){
-                continue;
-            } else if(currentChar == 'K'){
-                whiteCanCastleKing = true;
-            } else if(currentChar == 'Q'){
-                whiteCanCastleQueen = true;
-            } else if(currentChar == 'k'){
-                blackCanCastleKing = true;
-            } else if(currentChar == 'q'){
-                blackCanCastleQueen = true;
-            } else {
-                currentPositionInFEN = i;
-                break;
+            switch(currentChar){
+                case ' ': continue;
+                case 'K': whiteCanCastleKing = true;
+                case 'Q': whiteCanCastleQueen = true;
+                case 'k': blackCanCastleKing = true;
+                case 'q': blackCanCastleQueen = true;
+                default: {currentPositionInFEN = i; break;}
             }
-
         }
-
     }
 
     void printBoard(){
